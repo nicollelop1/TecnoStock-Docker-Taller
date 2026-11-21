@@ -93,6 +93,19 @@ def health():
 def listar():
     return jsonify(ejecutar(f"SELECT {COLUMNAS} FROM productos ORDER BY id"))
 
+@app.get("/productos/buscar")
+def buscar():
+    nombre = request.args.get("nombre", "").strip()
+
+    if not nombre:
+        return jsonify(error="Pon el nombre a buscar."), 400
+
+    productos = ejecutar(
+        f"SELECT {COLUMNAS} FROM productos WHERE nombre ILIKE %s ORDER BY id",
+        (f"%{nombre}%",)
+    )
+
+    return jsonify(productos)
 
 @app.get("/productos/<int:id_producto>")
 def obtener(id_producto):
